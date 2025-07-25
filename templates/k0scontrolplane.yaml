@@ -79,8 +79,6 @@ spec:
                     enabled: true
                     name: openstack-cloud-config
                     create: false
-                  nodeSelector:
-                    node-role.kubernetes.io/control-plane: "true"
                   tolerations:
                     - key: node.cloudprovider.kubernetes.io/uninitialized
                       value: "true"
