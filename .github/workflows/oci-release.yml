@@ -24,14 +24,16 @@ jobs:
     - name: Get chart version
       id: chart_version
       run: |
+	NAME=$(grep '^name:' Chart.yaml | awk '{print $2}')
         VERSION=$(grep '^version:' Chart.yaml | awk '{print $2}')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
+	echo "Chart name: $NAME"
         echo "Chart version: $VERSION"
     
     - name: Chart | Push
       uses: appany/helm-oci-chart-releaser@v0.4.2
       with:
-        name: openstack-hidden-cp
+        name: ${{ steps.chart_info.outputs.name }}
         repository: ${{ github.repository }}
         tag: ${{ steps.chart_version.outputs.version }}
         path: .
