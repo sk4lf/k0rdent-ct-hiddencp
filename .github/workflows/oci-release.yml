@@ -9,33 +9,36 @@ on:
       - 'values.schema.json'
       - 'templates/**'
   workflow_dispatch:
+
 jobs:
   release:
     permissions:
       contents: read
       packages: write
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    
-    - name: Get chart version
-      id: chart_version
+
+    - name: Get chart name and version
+      id: chart_info
       run: |
-	NAME=$(grep '^name:' Chart.yaml | awk '{print $2}')
+        NAME=$(grep '^name:' Chart.yaml | awk '{print $2}')
         VERSION=$(grep '^version:' Chart.yaml | awk '{print $2}')
+        echo "name=$NAME" >> $GITHUB_OUTPUT
         echo "version=$VERSION" >> $GITHUB_OUTPUT
-	echo "Chart name: $NAME"
+        echo "Chart name: $NAME"
         echo "Chart version: $VERSION"
-    
+
     - name: Chart | Push
       uses: appany/helm-oci-chart-releaser@v0.4.2
       with:
         name: ${{ steps.chart_info.outputs.name }}
         repository: ${{ github.repository }}
-        tag: ${{ steps.chart_version.outputs.version }}
+        tag: ${{ steps.chart_info.outputs.version }}
         path: .
         registry: ghcr.io
         registry_username: ${{ github.actor }}
